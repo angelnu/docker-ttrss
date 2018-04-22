@@ -1,9 +1,8 @@
-# Using https://github.com/gliderlabs/docker-alpine,
-# plus  https://github.com/just-containers/s6-overlay for a s6 Docker overlay.
-FROM gliderlabs/alpine
-# Initially was based on work of Christian Lück <christian@lueck.tv>.
+FROM alpine
+# Initially was based on work of Christian Lück <christian@lueck.tv> and Andreas Löffler <andy@x86dev.com>.
+# Added multiarch support
 LABEL description="A complete, self-hosted Tiny Tiny RSS (TTRSS) environment." \
-      maintainer="Andreas Löffler <andy@x86dev.com>"
+      maintainer="Angel Nunez Mencias <git@angelnu.com>"
 
 RUN set -xe && \
     apk update && apk upgrade && \
@@ -21,9 +20,9 @@ RUN adduser -u 82 -D -S -G www-data www-data
 # Copy root file system.
 COPY root /
 
-# Add s6 overlay.
-# Note: Tweak this line if you're running anything other than x86 AMD64 (64-bit).
-RUN curl -L -s https://github.com/just-containers/s6-overlay/releases/download/v1.19.1.1/s6-overlay-amd64.tar.gz | tar xvzf - -C /
+# Add s6 overlay - todo: use different
+ARG S6_RELEASE
+RUN curl -L -s ${S6_RELEASE} | tar xvzf - -C /
 
 # Add wait-for-it.sh
 ADD https://raw.githubusercontent.com/Eficode/wait-for/master/wait-for /srv
