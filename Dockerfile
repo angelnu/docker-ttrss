@@ -1,4 +1,11 @@
-FROM alpine
+ARG BASE=alpine
+FROM $BASE
+
+ARG arch=arm
+ENV ARCH=$arch
+
+COPY qemu/qemu-$ARCH-static* /usr/bin/
+
 # Initially was based on work of Christian Lück <christian@lueck.tv> and Andreas Löffler <andy@x86dev.com>.
 # Added multiarch support
 LABEL description="A complete, self-hosted Tiny Tiny RSS (TTRSS) environment." \
@@ -21,8 +28,8 @@ RUN adduser -u 82 -D -S -G www-data www-data
 COPY root /
 
 # Add s6 overlay - todo: use different
-ARG S6_RELEASE
-RUN curl -L -s ${S6_RELEASE} | tar xvzf - -C /
+ARG S6_RELEASE=v1.21.4.0
+RUN curl -L -s https://github.com/just-containers/s6-overlay/releases/download/${S6_RELEASE}/s6-overlay-$arch.tar.gz | tar xvzf - -C /
 
 # Add wait-for-it.sh
 ADD https://raw.githubusercontent.com/Eficode/wait-for/master/wait-for /srv
