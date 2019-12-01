@@ -51,6 +51,9 @@ setup_ttrss()
     	TTRSS_PATH=/var/www/ttrss
     fi
 
+    TTRSS_PATH_THEMES=${TTRSS_PATH}/themes.local
+    TTRSS_PATH_PLUGINS=${TTRSS_PATH}/plugins.local
+
     if [ ! -d ${TTRSS_PATH} ]; then
         mkdir -p ${TTRSS_PATH}
         if [ -n "$TTRSS_GIT_TAG" ]; then
@@ -63,9 +66,14 @@ setup_ttrss()
             echo "Setup: Setting up Tiny Tiny RSS (latest revision) ..."
             git clone --depth=1 ${TTRSS_REPO_URL} ${TTRSS_PATH}
         fi
-        git clone --depth=1 https://github.com/sepich/tt-rss-mobilize.git ${TTRSS_PATH}/plugins/mobilize
-        git clone --depth=1 https://github.com/m42e/ttrss_plugin-feediron.git ${TTRSS_PATH}/plugins/feediron
-        git clone --depth=1 https://github.com/levito/tt-rss-feedly-theme.git ${TTRSS_PATH}/themes/feedly-git
+
+        mkdir -p ${TTRSS_PATH_PLUGINS}
+        git clone --depth=1 https://github.com/sepich/tt-rss-mobilize.git ${TTRSS_PATH_PLUGINS}/mobilize
+        git clone --depth=1 https://github.com/feediron/ttrss_plugin-feediron.git ${TTRSS_PATH_PLUGINS}/feediron
+
+        mkdir -p ${TTRSS_PATH_THEMES}
+        git clone --depth=1 https://github.com/levito/tt-rss-feedly-theme.git ${TTRSS_PATH_THEMES}/levito-feedly-git
+        git clone --depth=1 https://github.com/Gravemind/tt-rss-feedlish-theme.git ${TTRSS_PATH_THEMES}/gravemind-feedly-git
     fi
 
     # Add initial config.
@@ -100,6 +108,11 @@ setup_ttrss()
 
     echo "Setup: URL is: $TTRSS_SELF_URL"
 
+    # By default we want to reset the theme to the default one.
+    if [ -z ${TTRSS_THEME_RESET} ]; then
+        TTRSS_THEME_RESET=1
+    fi
+
     # Patch URL path.
     sed -i -e 's@htt.*/@'"${TTRSS_SELF_URL}"'@g' ${TTRSS_PATH}/config.php
 
@@ -123,6 +136,11 @@ setup_ttrss()
     echo "Setup: Additional plugins: $TTRSS_PLUGINS"
 
     sed -i -e "s/.*define('PLUGINS'.*/define('PLUGINS', '$TTRSS_PLUGINS, auth_internal, note, updater');/g" ${TTRSS_PATH}/config.php
+
+    # Export variables for sub shells.
+    export TTRSS_PATH
+    export TTRSS_PATH_PLUGINS
+    export TTRSS_THEME_RESET
 }
 
 setup_db()

@@ -1,6 +1,8 @@
 #!/bin/sh
 
 TTRSS_PATH=/var/www/ttrss
+TTRSS_PATH_THEMES=${TTRSS_PATH}/themes.local
+TTRSS_PATH_PLUGINS=${TTRSS_PATH}/plugins.local
 
 update_ttrss()
 {
@@ -16,26 +18,36 @@ update_ttrss()
 update_plugin_mobilize()
 {
     echo "Updating: Mobilize plugin"
-    ( cd ${TTRSS_PATH}/plugins/mobilize && git pull origin HEAD )
+    ( cd ${TTRSS_PATH_PLUGINS}/mobilize && git pull origin HEAD )
 
     # Patch ttrss-mobilize plugin for getting it to work.
-    sed -i -e "s/<?$/<?php/g" ${TTRSS_PATH}/plugins/mobilize/m.php
+    sed -i -e "s/<?$/<?php/g" ${TTRSS_PATH_PLUGINS}/mobilize/m.php
 }
 
 update_plugin_feediron()
 {
     echo "Updating: FeedIron"
-    ( cd ${TTRSS_PATH}/plugins/feediron && git pull origin HEAD )
+    ( cd ${TTRSS_PATH_PLUGINS}/feediron && git pull origin HEAD )
 }
 
-update_theme_feedly()
+update_themes()
 {
-    echo "Updating: Feedly theme"
-    ( cd ${TTRSS_PATH}/themes/feedly-git && git pull origin HEAD )
+    echo "Updating: Themes"
 
-    # Link theme to TTRSS.
-    ln -f -s ${TTRSS_PATH}/themes/feedly-git/feedly ${TTRSS_PATH}/themes/feedly
-    ln -f -s ${TTRSS_PATH}/themes/feedly-git/feedly.css ${TTRSS_PATH}/themes/feedly.css
+    ( cd ${TTRSS_PATH_THEMES}/levito-feedly-git && git pull origin HEAD )
+    ( cd ${TTRSS_PATH_THEMES}/gravemind-feedly-git && git pull origin HEAD )
+
+    cd ${TTRSS_PATH_THEMES}
+
+    # Link Levito theme to TTRSS.
+    ln -f -s ${TTRSS_PATH_THEMES}/levito-feedly-git/feedly
+    ln -f -s ${TTRSS_PATH_THEMES}/levito-feedly-git/feedly.css
+
+    # Link Gravemind theme to TTRSS.
+    ln -f -s ${TTRSS_PATH_THEMES}/gravemind-feedly-git/feedlish.css
+    ln -f -s ${TTRSS_PATH_THEMES}/gravemind-feedly-git/feedlish.css.map
+    ln -f -s ${TTRSS_PATH_THEMES}/gravemind-feedly-git/feedlish-night.css
+    ln -f -s ${TTRSS_PATH_THEMES}/gravemind-feedly-git/feedlish-night.css.map
 }
 
 update_common()
@@ -60,7 +72,7 @@ update_common()
 update_ttrss
 update_plugin_mobilize
 update_plugin_feediron
-update_theme_feedly
+update_themes
 update_common
 
 echo "Update: Done"
