@@ -4,7 +4,7 @@
 include '/srv/ttrss-utils.php';
 
 $confpath = env('TTRSS_PATH', '/var/www/ttrss/');
-$conffile = $confpath . 'config.php';
+$conffile = $confpath . '/config.php';
 
 $ename = 'DB';
 $eport = 5432;
@@ -73,7 +73,7 @@ try {
 }
 catch (PDOException $e) {
     echo 'Database table not found, applying schema... ' . PHP_EOL;
-    $schema = file_get_contents($confpath . 'schema/ttrss_schema_' . $config['DB_TYPE'] . '.sql');
+    $schema = file_get_contents($confpath . '/schema/ttrss_schema_' . $config['DB_TYPE'] . '.sql');
     $schema = preg_replace('/--(.*?);/', '', $schema);
     $schema = preg_replace('/[\r\n]/', ' ', $schema);
     $schema = trim($schema, ' ;');
