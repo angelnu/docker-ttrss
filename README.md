@@ -1,4 +1,8 @@
 ﻿# docker-ttrss
+ 
+ 
+ ## MOVED to https://github.com/k8s-at-home/container-images
+ 
 
 This Dockerfile installs Tiny Tiny RSS (TT-RSS) with the following features:
 
